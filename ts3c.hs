@@ -10,7 +10,7 @@ showClient :: Client -> String
 showClient c = client_nickname c
 
 isUser :: Client -> Bool
-isUser c = client_type c /= 1 || True
+isUser c = client_type c /= 1
 
 isNull :: [Client] -> Bool
 isNull [] = True
@@ -33,7 +33,7 @@ showChannels xs = showChannels' zs
     createChannels [] = []
     createChannels (x:xs) = Channel {
                             channel_name = channel_name x,
-                            clients      = (test isUser (clients x)) 
+                            clients      = (takeEvery isUser (clients x)) 
                             } : createChannels xs
     ys :: [Channel]
     ys = createChannels xs
@@ -47,10 +47,8 @@ maybeListToList :: Maybe [a] -> [a]
 maybeListToList (Just xs) = xs
 maybeListToList (Nothing) = []
 
-test :: (a -> Bool) -> [a] -> [a]
-test _ [] = []
-test f (x:xs) | f x       = x : test f xs
-              | otherwise = test f xs
+takeEvery :: (a -> Bool) -> [a] -> [a]
+takeEvery f xs = [ y | y <- xs, f y ]
 
 url :: String
 url = "http://fkarchery.de/ts3chatter/"
