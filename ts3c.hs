@@ -1,60 +1,70 @@
 module Main(main) where
 
 import Prelude
+import Network.URI
+import Network.HTTP
+import System.IO
+import JSON
 
+showClient :: Client -> String
+showClient c = client_nickname c
 
---type Client = (Integer, String, Integer)
-data Client = Client Integer String Integer
+isUser :: Client -> Bool
+isUser c = client_type c /= 1 || True
 
-client :: Integer -> String -> Integer -> Client
-client clid client_nickname client_type = Client clid client_nickname client_type
+isNull :: [Client] -> Bool
+isNull [] = True
+isNull (c:cs) = not (isUser c) && isNull cs
 
-clid :: Client -> Integer
-clid (Client c _ _) = c
+showClients :: [Client] -> String
+showClients []     = ""
+showClients [c]    | isUser c  = showClient c
+                   | otherwise = ""
+showClients (c:cs) | isUser c  = showClient c ++ ", " ++ showClients cs
+                   | otherwise = showClients cs
 
-client_nickname :: Client -> String
-client_nickname (Client _ cn _) = cn
+showChannel :: Channel -> String
+showChannel c = channel_name c ++ ": " ++ showClients (clients c)
 
-client_type :: Client -> Integer
-client_type (Client _ _ ct) = ct
+showChannels :: [Channel] -> String
+showChannels xs = showChannels' zs
+  where
+    createChannels :: [Channel] -> [Channel]
+    createChannels [] = []
+    createChannels (x:xs) = Channel {
+                            channel_name = channel_name x,
+                            clients      = (test isUser (clients x)) 
+                            } : createChannels xs
+    ys :: [Channel]
+    ys = createChannels xs
+    zs :: [Channel]
+    zs = [ z | z <- xs, not (isNull (clients z)) ]
+    showChannels' []     = ""
+    showChannels' [c]    = showChannel c
+    showChannels' (c:cs) = showChannel c ++ "\n" ++ showChannels' cs
 
-isClient :: Client -> Bool
-isClient (Client _ _ 1) = False
-isClient _              = True
+maybeListToList :: Maybe [a] -> [a]
+maybeListToList (Just xs) = xs
+maybeListToList (Nothing) = []
 
-instance Show Client where
-  show c = client_nickname c
+test :: (a -> Bool) -> [a] -> [a]
+test _ [] = []
+test f (x:xs) | f x       = x : test f xs
+              | otherwise = test f xs
 
+url :: String
+url = "http://fkarchery.de/ts3chatter/"
 
-data Clients = Clients [Client]
+get :: String -> IO String
+get url = simpleHTTP (getRequest url) >>= getResponseBody
 
-clients :: [Client] -> Clients
-clients [] = Clients []
-clients (c:cs) | isClient c = Clients (c : (getClients (clients cs)))
-               | otherwise  = clients cs
+getClientlist :: IO String
+getClientlist = get (url ++ "clientlist")
 
-getClients :: Clients -> [Client]
-getClients (Clients cs) = cs
+getChannellist :: IO String
+getChannellist = get (url ++ "channellist")
 
-instance Show Clients where
-  show (Clients [])     = ""
-  show (Clients [c])    = show c
-  show (Clients (c:cs)) | client_type c == 1 = show cs
-                        | otherwise          = show c ++ ", "
-
-
-data Channel = Channel String Clients
-
-channel_name :: Channel -> String
-channel_name (Channel s _) = s
-
-channel_clients :: Channel -> Clients
-channel_clients (Channel _ cs) = cs
-
-
-
---testdata = [{"clid":2,"client_nickname":"ts3chatter","client_type":1}]
-testdata = client 2 "ts3chatter" 1
-
-
-main = print testdata
+main = do
+    str <- getChannellist
+    let channel = maybeListToList $ decodeChannel str
+    putStrLn $ showChannels channel
