@@ -36,6 +36,3 @@ decodeClients s = decode (BS.pack s)
 
 decodeChannel :: String -> Maybe [Channel]
 decodeChannel s = decode (BS.pack s)
-
-getClientlist :: String -> IO String
-getClientlist url = simpleHTTP (getRequest url) >>= getResponseBody
