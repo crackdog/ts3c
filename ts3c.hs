@@ -65,4 +65,7 @@ getChannellist = get (url ++ "channellist")
 main = do
     str <- getChannellist
     let channel = maybeListToList $ decodeChannel str
-    putStrLn $ showChannels channel
+    let output = showChannels channel
+    if length output > 0
+        then putStrLn output
+        else putStrLn "0 Clients are online."
