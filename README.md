@@ -1,4 +1,5 @@
 ts3c
 ====
 
-ts3c is a small command line interface for ts3chatter written in Haskell.
+ts3c is a small command line interface for ts3chatter written in Haskell as 
+a small test project.
