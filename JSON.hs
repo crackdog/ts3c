@@ -7,6 +7,7 @@ import System.IO
 import Data.Aeson ((.:), (.:?), decode, FromJSON(..), Value(..))
 import Control.Applicative ((<$>), (<*>))
 import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.ByteString.Lazy as L
 import Data.List
 
 data Client = Client
@@ -31,8 +32,8 @@ instance FromJSON Channel where
                            v .: "channel_name" <*>
                            v .: "clients"
 
-decodeClients :: String -> Maybe [Client]
-decodeClients s = decode (BS.pack s)
+decodeClients :: L.ByteString -> Maybe [Client]
+decodeClients s = decode s
 
-decodeChannel :: String -> Maybe [Channel]
-decodeChannel s = decode (BS.pack s)
+decodeChannel :: L.ByteString -> Maybe [Channel]
+decodeChannel s = decode s

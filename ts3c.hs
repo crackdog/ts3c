@@ -1,10 +1,11 @@
 module Main(main) where
 
 import Prelude
-import Network.URI
-import Network.HTTP
-import System.IO
+--import Network.URI
+import Network.HTTP.Conduit
+--import System.IO
 import JSON
+import qualified Data.ByteString.Lazy as L
 
 showClient :: Client -> String
 showClient c = client_nickname c
@@ -35,8 +36,6 @@ showChannels xs = showChannels' zs
                             channel_name = channel_name x,
                             clients      = (takeEvery isUser (clients x)) 
                             } : createChannels xs
-    ys :: [Channel]
-    ys = createChannels xs
     zs :: [Channel]
     zs = [ z | z <- xs, not (isNull (clients z)) ]
     showChannels' []     = ""
@@ -51,15 +50,15 @@ takeEvery :: (a -> Bool) -> [a] -> [a]
 takeEvery f xs = [ y | y <- xs, f y ]
 
 url :: String
-url = "http://fkarchery.de/ts3chatter/"
+url = "https://fkarchery.de/ts3chatter/"
 
-get :: String -> IO String
-get url = simpleHTTP (getRequest url) >>= getResponseBody
+get :: String -> IO L.ByteString
+get url = simpleHttp url
 
-getClientlist :: IO String
+getClientlist :: IO L.ByteString
 getClientlist = get (url ++ "clientlist")
 
-getChannellist :: IO String
+getChannellist :: IO L.ByteString
 getChannellist = get (url ++ "channellist")
 
 main = do
