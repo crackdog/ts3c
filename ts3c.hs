@@ -7,7 +7,7 @@ import JSON
 import qualified Data.ByteString.Lazy as L
 
 showClient :: Client -> String
-showClient c = client_nickname c
+showClient c = client_nickname c ++ " (" ++ show (connection_connected_time c) ++ ")"
 
 isUser :: Client -> Bool
 isUser c = client_type c /= 1
@@ -19,9 +19,9 @@ showChannel :: Channel -> String
 showChannel c = channel_name c ++ ": " ++ showClients (clients c)
 
 showChannels :: [Channel] -> String
-showChannels = intercalate "\n" . 
-               map showChannel . 
-               filter (not . null . filter isUser . clients)
+showChannels cs = if null out then "0 clients are online." else out
+  where
+    out = intercalate "\n" . map showChannel . filter (not . null . filter isUser . clients) $ cs
 
 get :: String -> IO L.ByteString
 get url = simpleHttp url
@@ -33,5 +33,5 @@ main :: IO ()
 main = do
     str <- getChannellist "https://fkarchery.de/ts3chatter/"
     case decodeChannel str of
-      Nothing -> putStrLn "0 Clients are online."
+      Nothing -> putStrLn "internal error"
       Just cs -> putStrLn $ showChannels cs
