@@ -7,7 +7,7 @@ import Channellist
 import qualified Data.ByteString.Lazy as L
 
 showClient :: Client -> String
-showClient c = client_nickname c ++ " (" ++ (showSeconds (connection_connected_time c)) ++ ")"
+showClient c = "\t" ++ client_nickname c ++ " (" ++ (showSeconds (connection_connected_time c)) ++ ")"
 
 showSeconds :: Int -> String
 showSeconds millis = intercalate ":" [h, m, s]
@@ -23,10 +23,10 @@ isUser :: Client -> Bool
 isUser c = client_type c /= 1
 
 showClients :: [Client] -> String
-showClients = intercalate ", " . map showClient . filter isUser
+showClients = intercalate "\n" . map showClient . filter isUser
 
 showChannel :: Channel -> String
-showChannel c = channel_name c ++ ": \t" ++ showClients (clients c)
+showChannel c = channel_name c ++ ":\n" ++ showClients (clients c)
 
 showChannels :: [Channel] -> String
 showChannels cs = if null out then "0 clients are online." else out
