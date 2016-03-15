@@ -16,10 +16,10 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 executable ts3c
-  main-is:             ts3c.hs
-  -- other-modules:       
+  main-is:             Main.hs
+  other-modules:       Channellist
   -- other-extensions:    
-  build-depends:       base, HTTP, http-conduit, network-uri, aeson, bytestring
+  build-depends:       base, http-conduit, aeson, bytestring
   -- hs-source-dirs:      
   default-language:    Haskell2010
   ghc-options:         -O2 -Wall

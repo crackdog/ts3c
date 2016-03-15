@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module JSON (Client(..), Channel(..), decodeClients, decodeChannel) where
+module Channellist (Client(..), Channel(..), decodeClients, decodeChannel) where
 
 import Prelude
 import Data.Aeson ((.:), {-(.:?),-} decode, FromJSON(..), Value(..))
