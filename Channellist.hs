@@ -7,9 +7,9 @@ import qualified Data.ByteString.Lazy as L
 
 data Client = Client
     { clid                      :: Int
-    , client_nickname           :: String
-    , client_type               :: Int
-    , connection_connected_time :: Int
+    , clientNickname           :: String
+    , clientType               :: Int
+    , connectionConnectedTime :: Int
     } deriving Show
 
 instance FromJSON Client where
@@ -21,7 +21,7 @@ instance FromJSON Client where
     parseJSON _ = error "error at FromJSON"
 
 data Channel = Channel
-    { channel_name :: String
+    { channelName :: String
     , clients      :: [Client]
     } deriving Show
 
@@ -32,7 +32,7 @@ instance FromJSON Channel where
     parseJSON _ = error "error at FromJSON"
 
 decodeClients :: L.ByteString -> Maybe [Client]
-decodeClients s = decode s
+decodeClients = decode
 
 decodeChannel :: L.ByteString -> Maybe [Channel]
-decodeChannel s = decode s
+decodeChannel = decode
