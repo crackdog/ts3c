@@ -42,6 +42,4 @@ getChannellist url = get (url ++ "channellist")
 main :: IO ()
 main = do
     str <- getChannellist "https://fkarchery.de/ts3chatter/"
-    case decodeChannel str of
-      Nothing -> putStrLn "internal error"
-      Just cs -> putStrLn $ showChannels cs
+    putStrLn . maybe "internal error" showChannels $ decodeChannel str
