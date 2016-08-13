@@ -6,9 +6,9 @@ import Data.Aeson ((.:), {-(.:?),-} decode, FromJSON(..), Value(..))
 import qualified Data.ByteString.Lazy as L
 
 data Client = Client
-    { clid                      :: Int
-    , clientNickname           :: String
-    , clientType               :: Int
+    { clid                    :: Int
+    , clientNickname          :: String
+    , clientType              :: Int
     , connectionConnectedTime :: Int
     } deriving Show
 
