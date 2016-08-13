@@ -5,6 +5,7 @@ import Data.List
 import Network.HTTP.Conduit
 import Channellist
 import qualified Data.ByteString.Lazy as L
+import Control.Exception
 
 showClient :: Client -> String
 showClient c = "\t" ++ clientNickname c ++ " (" ++ showSeconds (connectionConnectedTime c) ++ ")"
@@ -39,7 +40,12 @@ get = simpleHttp
 getChannellist :: String -> IO L.ByteString
 getChannellist url = get (url ++ "channellist")
 
+catchCallback :: HttpException -> IO ()
+catchCallback _ = putStrLn "Internal Error or Server Offline."
+
 main :: IO ()
-main = do
-    str <- getChannellist "https://fkarchery.de/ts3chatter/"
-    putStrLn . maybe "internal error" showChannels $ decodeChannel str
+main = catch
+    (do
+      str <- getChannellist "https://fkarchery.de/ts3chatter/"
+      putStrLn . maybe "internal error" showChannels $ decodeChannel str)
+    catchCallback
